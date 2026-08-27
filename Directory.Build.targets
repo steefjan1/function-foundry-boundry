@@ -1,0 +1,19 @@
+<Project>
+  <!--
+    Defensive override.
+
+    This repo does NOT use central package management. Versions live in the four .csproj
+    files, because several of them float and central package management rejects floating
+    versions with NU1011.
+
+    An earlier revision of this repo did ship a Directory.Packages.props. If you extracted a
+    newer zip over an older checkout, that file is still on disk, and its
+    ManagePackageVersionsCentrally=true would switch the feature back on and produce NU1008
+    and NU1011 together. Directory.Build.targets is imported last, so this wins either way.
+
+    Deleting the stale file is still the right fix. test/validate.ps1 checks for it.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

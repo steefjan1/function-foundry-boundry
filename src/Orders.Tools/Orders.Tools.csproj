@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Orders.Tools</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    Versions confirmed against nuget.org on 27 August 2026 are pinned exactly.
+    Versions that were NOT confirmed float on a conservative major, so restore resolves
+    whatever exists rather than failing on a guessed number. Central package management
+    is deliberately not used here, because it rejects floating versions (NU1011).
+    Run `dotnet list package` after a green restore and pin the floats.
+  -->
+  <ItemGroup>
+    <!-- float: Agent Framework hosting needs 2.2.0 or later, exact version unconfirmed -->
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.*" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.*" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.*" />
+    <!-- pinned: confirmed 1.6.0, published 2026-07-31 -->
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Mcp" Version="1.6.0" />
+    <!-- Shared state for the action layer. Same storage account and identity as the host. -->
+    <PackageReference Include="Azure.Data.Tables" Version="12.*" />
+    <PackageReference Include="Azure.Identity" Version="1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orders.Tools.Core\Orders.Tools.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="host.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+</Project>

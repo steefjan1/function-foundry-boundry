@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <!--
+      net8.0 because the Functions worker, Agent Framework and Azure SDK packages used here
+      all target net8.0 or lower, and it is the lowest common denominator across build agents.
+
+      To move to net9.0 you must change THREE places, not one:
+        1. this property
+        2. src/Orders.HostedAgent/Dockerfile   (sdk and aspnet base images)
+        3. infra/main.bicep                    (functionAppConfig.runtime.version, both apps)
+      Set TargetFrameworkOverride to do it from the command line:
+        dotnet build -p:TargetFrameworkOverride=net9.0
+    -->
+    <TargetFrameworkOverride Condition="'$(TargetFrameworkOverride)' == ''">net8.0</TargetFrameworkOverride>
+    <TargetFramework>$(TargetFrameworkOverride)</TargetFramework>
+
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>

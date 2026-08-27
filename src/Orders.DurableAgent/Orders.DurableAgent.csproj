@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Orders.DurableAgent</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup Label="Functions host">
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.*" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.*" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.*" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.DurableTask" Version="1.*" />
+  </ItemGroup>
+
+  <!--
+    Microsoft.Extensions.AI is NOT referenced directly. Microsoft.Agents.AI 1.19.0 requires
+    version 10.9.0 or later, and a direct 9.x reference produced NU1605 package downgrade
+    errors on every project. Taking it transitively lets the Agent Framework pick its own
+    floor, and AIFunctionFactory is still available at compile time.
+  -->
+  <ItemGroup Label="Agent Framework and Foundry">
+    <!--
+      EVERY Microsoft.Agents.AI package is pinned to the 1.16 train. Do not float these.
+
+      Floating them independently is what broke this sample. NuGet happily resolved
+      Microsoft.Agents.AI 1.19.0 alongside Microsoft.Agents.AI.DurableTask and
+      ...Hosting.AzureFunctions at 1.16.0-preview, because nothing declares an upper bound.
+      It compiles, it deploys, it starts, the agent answers, and then the orchestrator dies
+      with "The orchestrator function completed on a non-orchestrator thread!" and is retried
+      forever. The durable packages hook into internals of the core package, and the core
+      package moved on without them.
+
+      The stable core (1.19) is AHEAD of the durable previews (1.16). Pinning down to the
+      durable train is the only combination where the pieces are the versions they were
+      built against. Check whether the durable packages have caught up before raising this.
+    -->
+    <PackageReference Include="Microsoft.Agents.AI" Version="1.16.*" />
+    <PackageReference Include="Microsoft.Agents.AI.Foundry" Version="1.16.*-*" />
+    <PackageReference Include="Microsoft.Agents.AI.Hosting.AzureFunctions" Version="1.16.*-*" />
+    <PackageReference Include="Microsoft.Agents.AI.DurableTask" Version="1.16.*-*" />
+    <!-- 2.*-* not 2.*: Agents.AI.Foundry 1.19.0 binds Azure.AI.Projects 2.1.0.0,
+         which only exists as a beta. A stable 2.0.1 produces CS1705. -->
+    <PackageReference Include="Azure.AI.Projects" Version="2.*-*" />
+    <PackageReference Include="Azure.Identity" Version="1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orders.Tools.Core\Orders.Tools.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="host.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+</Project>

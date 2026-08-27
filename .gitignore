@@ -1,0 +1,12 @@
+bin/
+obj/
+.azure/
+local.settings.json
+*.user
+
+# Diagnostic captures. diagnose.ps1 -OutFile writes full App Insights traces, which can
+# include request URLs and app names; keep them out of the public history.
+diagnose*.json
+toolsdiag*.json
+*.env
+.env

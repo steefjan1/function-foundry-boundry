@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "namePrefix": {
+      "value": "${AZURE_NAME_PREFIX=ffb}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "modelDeploymentName": {
+      "value": "${MODEL_DEPLOYMENT_NAME=gpt-5.4-mini}"
+    },
+    "modelName": {
+      "value": "${MODEL_NAME=gpt-5.4-mini}"
+    },
+    "modelVersion": {
+      "value": "${MODEL_VERSION=}"
+    },
+    "modelCapacity": {
+      "value": "${MODEL_CAPACITY=30}"
+    },
+    "roleAssignmentSeed": {
+      "value": "${ROLE_ASSIGNMENT_SEED=}"
+    }
+  }
+}

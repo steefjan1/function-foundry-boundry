@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>Orders.HostedAgent</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Same train as the durable project. See that csproj for why. -->
+    <PackageReference Include="Microsoft.Agents.AI" Version="1.16.*" />
+    <PackageReference Include="Microsoft.Agents.AI.Foundry" Version="1.16.*-*" />
+    <!-- Maps /readiness and the /responses surface the registration declares. Without it the
+         container answers on routes nobody visits and every invoke 424s as session_not_ready. -->
+    <PackageReference Include="Microsoft.Agents.AI.Foundry.Hosting" Version="1.16.*-*" />
+    <!-- 2.*-* not 2.*: Agents.AI.Foundry 1.19.0 binds Azure.AI.Projects 2.1.0.0,
+         which only exists as a beta. A stable 2.0.1 produces CS1705. -->
+    <PackageReference Include="Azure.AI.Projects" Version="2.*-*" />
+    <PackageReference Include="Azure.Identity" Version="1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orders.Tools.Core\Orders.Tools.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,22 @@
+name: functions-foundry-boundary
+metadata:
+  template: functions-foundry-boundary@1.0.0
+services:
+  tools:
+    project: ./src/Orders.Tools
+    language: dotnet
+    host: function
+  durable:
+    project: ./src/Orders.DurableAgent
+    language: dotnet
+    host: function
+hooks:
+  postprovision:
+    windows:
+      shell: pwsh
+      run: ./test/postprovision.ps1
+      continueOnError: true
+    posix:
+      shell: sh
+      run: ./test/postprovision.sh
+      continueOnError: true

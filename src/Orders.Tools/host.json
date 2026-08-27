@@ -1,0 +1,15 @@
+{
+  "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingSettings": { "isEnabled": true, "excludedTypes": "Request" }
+    }
+  },
+  "extensions": {
+    "mcp": {
+      "serverName": "orders-action-layer",
+      "serverVersion": "1.0.0",
+      "instructions": "Tools for fulfilling customer orders. Always reserve stock with a reservation key derived from the order id, never from the current run."
+    }
+  }
+}

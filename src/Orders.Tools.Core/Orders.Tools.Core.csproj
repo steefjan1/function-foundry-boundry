@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- No package references. The action layer logic depends on nothing but the BCL,
+       which is why it can be bound to MCP triggers, HTTP triggers and unit tests alike. -->
+</Project>

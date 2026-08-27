@@ -1,0 +1,24 @@
+{
+  "name": "FulfilmentPromptAgent",
+  "definition": {
+    "kind": "prompt",
+    "model": "MODEL_DEPLOYMENT_NAME",
+    "instructions": "You fulfil customer orders for a hardware retailer.\n\nUse the supplied tools rather than guessing. Never invent stock levels, order ids or booking references.\n\nWork in this order: look the order up, check inventory, and only reserve stock when free stock covers the quantity. Reserve with a reservation key of the form resv-{orderId}. Never derive the key from the current run or from a timestamp, because reusing the order derived key is what makes a retry safe.\n\nBook the earliest weekday morning slot, then send the customer exactly one message describing what happens next. If you cannot fulfil the order, send exactly one message explaining why and reserve nothing.",
+    "tools": [
+      {
+        "type": "mcp",
+        "server_label": "orders_action_layer",
+        "server_url": "MCP_ENDPOINT",
+        "require_approval": "never",
+        "project_connection_id": "orders-action-layer",
+        "allowed_tools": [
+          "lookup_order",
+          "check_inventory",
+          "reserve_stock",
+          "arrange_delivery",
+          "notify_customer"
+        ]
+      }
+    ]
+  }
+}
