@@ -626,6 +626,46 @@ unaffected. It disappears on an SDK with a newer compiler.
     its own conversation history, while the action layer, post clear-state, held nothing.
     The thread remembered; only the system of record knew. That line belongs in the post.
 
+40. **Local credential chain: `DefaultAzureCredential` died at the IMDS probe.** First local
+    `/responses` invoke failed with `ManagedIdentityCredential authentication failed: All
+    Managed Identity sources are unavailable` after six retries against 169.254.169.254,
+    surfaced as terminal instead of falling through to the CLI credential. The fix is one
+    environment variable, and it is the right shape rather than a workaround:
+    `AZURE_TOKEN_CREDENTIALS=dev` locally restricts the chain to developer credentials
+    (Azure CLI included) and skips the IMDS probe; unset in the real container, the chain
+    walks the production path and uses the platform's managed identity. Same binary, right
+    credential family on each side of the boundary.
+
+    Noticed alongside it: that failed run returned **HTTP 200** with `Status=Failed,
+    OutputCount=0` in the body. The responses protocol carries failure inside the response
+    object. A caller checking only the status code files a dead run as a success, which puts
+    this squarely in the silent-plausible family the rest of this document catalogues.
+
+41. **Option 3, run self-hosted, reproduced the slot bug the orchestrator exists to prevent.**
+    With credentials fixed, the full stack worked first try: `/responses` in, eleven output
+    items, lookup_order → check_inventory → reserve_stock → arrange_delivery →
+    notify_customer, `reserved 1`, notified **exactly once**, all against the real action
+    layer. The exactly-once half of the trade held this run.
+
+    The determinism half did not. The booking reference came back:
+
+    ```
+    DLV-ORD-1002-next available
+    ```
+
+    The slot is the literal phrase "next available". Fix 23 hit the identical failure in the
+    durable agent's first draft, and the fix there was structural: the orchestrator computes
+    the date from the replay-safe clock and tells the model to use it verbatim. Option 3 has
+    no orchestrator, so nobody owns the clock, the model passed prose as the slot argument,
+    and the action layer recorded it faithfully. (A production action layer should also
+    validate slot format and refuse prose. This one deliberately shows what arrives.)
+
+    Between them, one afternoon of runs produced the full matrix the post argues from:
+    option 1 duplicated a notification (fix 34), option 2's model turn mis-judged a gate until
+    the gate moved into the runtime (fix 36), and option 3 invented time (this fix). Three
+    substrates, three different failures, one common shape: whatever the runtime owned, held;
+    whatever the model was merely instructed about, eventually did not.
+
 ## Redeploy conflicts, and how the template avoids them
 
 13. **Role assignment names cannot use `principalId`.** I briefly changed them to
