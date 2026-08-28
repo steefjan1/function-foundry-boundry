@@ -140,7 +140,11 @@ $body = @{
     image  = $image
     cpu    = '1'
     memory = '2Gi'
-    container_protocol_versions = @(@{ protocol = 'responses'; version = '1.0.0' })
+    # 2.0.0, not 1.0.0. Invoking a version registered as 1.0.0 through the per-agent
+    # endpoint returns 501 unsupported_container_protocol_version naming v2.0.0 as required.
+    # The examples this script was written from said 1.0.0; the service's error said
+    # otherwise, and the service wins.
+    container_protocol_versions = @(@{ protocol = 'responses'; version = '2.0.0' })
 
     # No FOUNDRY_* or AGENT_* variables here: the service rejects them as reserved, because
     # the platform injects them into the container itself. FOUNDRY_PROJECT_ENDPOINT arrives

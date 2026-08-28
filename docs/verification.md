@@ -666,6 +666,27 @@ unaffected. It disappears on an SDK with a newer compiler.
     substrates, three different failures, one common shape: whatever the runtime owned, held;
     whatever the model was merely instructed about, eventually did not.
 
+42. **The invocation surface, mapped one 4xx at a time.** Automating all three substrates in
+    `test-all.ps1` surfaced three more facts about the responses API, every one delivered by
+    an error message rather than a docs page:
+
+    - Prompt agents are invoked at `{project}/openai/v1/responses` with an `agent_reference`
+      object in the body. The version is in the PATH; posting to `/responses?api-version=v1`
+      returns NotFound because that route does not exist.
+    - Hosted agents "can only be called through the agent endpoint":
+      `{project}/agents/{name}/endpoint/protocols/openai/responses`, agent named in the URL,
+      no reference in the body. This endpoint versions by QUERY PARAMETER and 400s without
+      `?api-version=v1`. Two sibling endpoints, two versioning conventions.
+    - A hosted version registered with `container_protocol_versions: responses 1.0.0`
+      answers 501 `unsupported_container_protocol_version` naming v2.0.0 as required. The
+      registration scripts now declare 2.0.0.
+
+    The suite itself encodes the repo's central lesson as policy: runtime guarantees are
+    asserted and fail the run (orchestration completes, reservations exact, state present);
+    model-instruction behaviour is observed and reported (notification counts, the slot the
+    model chose), because this repo has measured the same substrate, same instructions,
+    produce different counts on different runs.
+
 ## Redeploy conflicts, and how the template avoids them
 
 13. **Role assignment names cannot use `principalId`.** I briefly changed them to

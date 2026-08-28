@@ -34,7 +34,7 @@ cat > "${BODY_FILE}" <<JSON
     "cpu": "1",
     "memory": "2Gi",
     "container_protocol_versions": [
-      { "protocol": "responses", "version": "1.0.0" }
+      { "protocol": "responses", "version": "2.0.0" }
     ],
     "environment_variables": {
       "TOOL_LAYER_URL": "https://${TOOLS_APP_NAME}.azurewebsites.net",
